@@ -1,5 +1,5 @@
 ---
-name: brand-lines
+name: baixiao-brand-lines
 description: >
   Turn one or many brand logos into a "luminance study": every mark is sampled
   into a brightness table, then redrawn as bamboo-like vertical strokes whose
