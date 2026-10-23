@@ -1,0 +1,19 @@
+{
+  "name": "brand-lines-skill",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Generator and diagnostic tooling for the brand-lines skill.",
+  "scripts": {
+    "build": "node build.mjs --config ../assets/brands.json --out ../out/index.html",
+    "diagnose": "node diagnose.mjs --html ../out/index.html --out ../out/quality.json",
+    "setup": "npm install && npx playwright install chromium",
+    "check": "npm run build && npm run diagnose"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

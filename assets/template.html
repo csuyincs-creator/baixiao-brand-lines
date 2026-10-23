@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>__TITLE__</title>
+<meta name="description" content="__DESCRIPTION__" />
+<style>
+  :root {
+    --paper: #08080a;
+    --text: #efeee9;
+    --muted: #8b8c93;
+    --hair: rgba(255, 255, 255, .14);
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", sans-serif;
+    --mono: "SFMono-Regular", "Cascadia Mono", "Roboto Mono", Consolas, "Liberation Mono", monospace;
+    --pad-x: clamp(18px, 3.2vw, 54px);
+    --cols-max: 4;
+    --cols: var(--cols-max);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { background: var(--paper); }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background:
+      radial-gradient(1100px 680px at 50% -12%, #191b21 0%, rgba(8, 8, 10, 0) 62%),
+      var(--paper);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+    opacity: .035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+  }
+
+  ::selection { background: #2c55ff; color: #f4f2eb; }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1860px;
+    min-height: 100svh;
+    margin: 0 auto;
+    padding: clamp(20px, 2.2vw, 34px) var(--pad-x) 22px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    border-bottom: 1px solid var(--hair);
+    padding-bottom: 13px;
+  }
+
+  .masthead-top {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: .19em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .masthead-top .mid { justify-self: center; white-space: nowrap; }
+  .masthead-top .right { justify-self: end; white-space: nowrap; }
+
+  .wm {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--text);
+    letter-spacing: .22em;
+    white-space: nowrap;
+  }
+
+  .wm .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+
+  .wm .bars i {
+    display: block;
+    width: 1px;
+    height: var(--h);
+    background: currentColor;
+  }
+
+  .title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(268px, 348px);
+    align-items: end;
+    gap: 48px;
+    padding: clamp(22px, 2.8vh, 38px) 0 clamp(18px, 2.2vh, 26px);
+  }
+
+  .kicker {
+    margin: 0 0 13px;
+    font-family: var(--mono);
+    font-size: 9px;
+    line-height: 1;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  h1 {
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(38px, 4.2vw, 64px);
+    line-height: .94;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+  }
+
+  h1 em { font-style: italic; letter-spacing: -.02em; }
+
+  .lede {
+    justify-self: end;
+    max-width: 35ch;
+    margin: 0 0 4px;
+    color: #a2a3ab;
+    font-size: 12.5px;
+    line-height: 1.7;
+    letter-spacing: .002em;
+    text-wrap: pretty;
+  }
+
+  .lede b { color: #e6e4dc; font-weight: 500; }
+
+  /* ---------- cards ---------- */
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: clamp(10px, 1.1vw, 18px);
+  }
+
+  .card {
+    --pad: clamp(13px, 4.3cqi, 26px);
+    position: relative;
+    container-type: inline-size;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    isolation: isolate;
+    border: 1px solid var(--edge);
+    background:
+      radial-gradient(120% 78% at 50% -14%, var(--glow), transparent 62%),
+      var(--bg);
+    color: var(--ink);
+    cursor: crosshair;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity .7s ease,
+      transform .7s cubic-bezier(.16, 1, .3, 1),
+      box-shadow .5s ease,
+      border-color .4s ease;
+  }
+
+  .card.is-ready {
+    opacity: 1;
+    transform: none;
+  }
+
+  .card.is-scanning {
+    transform: translateY(-3px);
+    border-color: transparent;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--scan) 62%, transparent),
+      0 24px 60px -40px rgba(0, 0, 0, .9);
+  }
+
+  .card .canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .scrim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .scrim.top {
+    top: 0;
+    height: 18%;
+    background: linear-gradient(to bottom,
+      rgb(var(--bg-rgb)) 0%,
+      rgb(var(--bg-rgb) / .97) 62%,
+      rgb(var(--bg-rgb) / 0) 100%);
+  }
+
+  .scrim.bottom {
+    bottom: 0;
+    height: 27%;
+    background: linear-gradient(to top,
+      rgb(var(--bg-rgb)) 0%,
+      rgb(var(--bg-rgb) / .93) 42%,
+      rgb(var(--bg-rgb) / 0) 100%);
+  }
+
+  .ui {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    padding: var(--pad);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .brand .mark {
+    display: block;
+    flex: none;
+    width: clamp(20px, 6.4cqi, 30px);
+    height: clamp(20px, 6.4cqi, 30px);
+  }
+
+  .brand-name {
+    font-size: clamp(9px, 2.5cqi, 12px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .top-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 9px;
+    flex: none;
+  }
+
+  .idx {
+    font-family: var(--mono);
+    font-size: clamp(8px, 2.1cqi, 10px);
+    line-height: 1;
+    letter-spacing: .13em;
+    font-variant-numeric: tabular-nums;
+    opacity: .62;
+  }
+
+  .idx b { font-weight: 500; opacity: 1; }
+  .idx span { opacity: .7; }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--scan);
+    font-family: var(--mono);
+    font-size: clamp(7px, 1.8cqi, 8.5px);
+    line-height: 1;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity .38s ease, transform .38s ease;
+  }
+
+  .card.is-scanning .status { opacity: .92; transform: none; }
+
+  .status .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--scan) 16%, transparent);
+    animation: blip 1.9s ease-in-out infinite;
+  }
+
+  @keyframes blip {
+    0%, 100% { opacity: .45; transform: scale(.86); }
+    50% { opacity: 1; transform: scale(1.12); }
+  }
+
+  .card-bottom {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tagline {
+    max-width: 92%;
+    margin: 0 0 clamp(10px, 3.2cqi, 20px);
+    font-family: var(--serif);
+    font-size: clamp(15px, 5.4cqi, 25px);
+    font-weight: 400;
+    line-height: 1.16;
+    letter-spacing: -.012em;
+    text-wrap: balance;
+  }
+
+  .bottom-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .src {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    padding: 0 0 3px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: var(--mono);
+    font-size: clamp(8px, 2cqi, 9.5px);
+    line-height: 1;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .src::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    opacity: .22;
+    transform-origin: left;
+    transition: opacity .35s ease;
+  }
+
+  .src:hover::after { opacity: .72; }
+
+  .src:focus-visible {
+    outline: 1px solid var(--scan);
+    outline-offset: 5px;
+  }
+
+  .src .arw {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1;
+    transition: transform .35s cubic-bezier(.16, 1, .3, 1);
+  }
+
+  .src:hover .arw { transform: translateX(4px); }
+  .src[aria-pressed="true"]:hover .arw { transform: translateX(-4px); }
+
+  .meta-wrap {
+    position: relative;
+    flex: none;
+    width: 42%;
+    height: 11px;
+    font-family: var(--mono);
+    font-size: clamp(6.5px, 1.65cqi, 8px);
+    line-height: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meta,
+  .coords {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    white-space: nowrap;
+    transition: opacity .32s ease, transform .32s ease;
+  }
+
+  .meta { opacity: .52; }
+
+  .coords {
+    opacity: 0;
+    transform: translateY(3px);
+    color: var(--scan);
+    letter-spacing: .04em;
+  }
+
+  .card.is-scanning .meta { opacity: 0; transform: translateY(-3px); }
+  .card.is-scanning .coords { opacity: .92; transform: none; }
+
+  /* ---------- footer ---------- */
+
+  .page-footer {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    margin-top: clamp(14px, 2vh, 24px);
+    padding-top: 13px;
+    border-top: 1px solid var(--hair);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 8.5px;
+    line-height: 1;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+
+  .page-footer > span:last-child { justify-self: end; text-align: right; }
+
+  .legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    justify-self: center;
+    white-space: nowrap;
+  }
+
+  .legend .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 11px;
+  }
+
+  .legend .bars i {
+    display: block;
+    width: var(--w);
+    height: 100%;
+    background: currentColor;
+    opacity: .85;
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width: 1580px) { :root { --cols: min(var(--cols-max), 4); } }
+  @media (max-width: 1240px) { :root { --cols: min(var(--cols-max), 3); } }
+  @media (max-width: 900px)  { :root { --cols: min(var(--cols-max), 2); } }
+
+  @media (max-width: 1000px) {
+    .masthead-top .mid { display: none; }
+    .title-row {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 14px;
+      padding-top: 26px;
+    }
+    .masthead-top { grid-template-columns: 1fr auto; }
+    .lede { justify-self: start; max-width: 52ch; margin: 0; }
+    .page-footer { grid-template-columns: 1fr auto; row-gap: 10px; }
+    .page-footer .legend { display: none; }
+  }
+
+  @media (max-width: 620px) {
+    :root { --cols: 1; }
+    .masthead-top .right { display: none; }
+    .card { aspect-ratio: 4 / 5; }
+    .page-footer { font-size: 8px; letter-spacing: .13em; }
+    .page-footer > span:last-child { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .status, .meta, .coords, .src .arw, .src::after {
+      transition-duration: .001ms !important;
+    }
+    .status .dot { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="wm">
+        <span class="bars" aria-hidden="true">
+          <i style="--h:7px"></i><i style="--h:12px"></i><i style="--h:9px"></i><i style="--h:12px"></i><i style="--h:5px"></i>
+        </span>
+        <span>__WORDMARK__</span>
+      </span>
+      <span class="mid">__MASTHEAD_MID__</span>
+      <span class="right">__MASTHEAD_RIGHT__</span>
+    </div>
+
+    <div class="title-row">
+      <div>
+        <p class="kicker">__KICKER__</p>
+        <h1>__HEADLINE__</h1>
+      </div>
+      <p class="lede">__LEDE__</p>
+    </div>
+  </header>
+
+  <main class="cards" id="cards"></main>
+
+  <footer class="page-footer">
+    <span>__FOOTER_LEFT__</span>
+    <span class="legend">
+      <span>Luminance → width</span>
+      <span class="bars" aria-hidden="true">
+        <i style="--w:1px"></i><i style="--w:1.8px"></i><i style="--w:2.7px"></i><i style="--w:3.8px"></i>
+      </span>
+    </span>
+    <span>__FOOTER_RIGHT__</span>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const BRANDS = __BRAND_DATA__;
+
+  const MONO = '"Cascadia Mono", "SFMono-Regular", "Roboto Mono", Consolas, monospace';
+  const GRID_BASE = 64;
+  const GRID_FINE = 96;
+  const PROBE = 384;
+  const NOISE_RES = 32;
+  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Pixel budget. Every card is a full-frame canvas redraw, so cost scales with
+  // card count × DPR². Rendering eight marks at DPR 2 costs ~63ms/frame; capping
+  // the budget and halving the rate for non-hovered cards brings it back to ~20.
+  const PIXEL_BUDGET = 5.2e6;
+  function pickDpr(cardCount, cssW, cssH) {
+    const native = window.devicePixelRatio || 1;
+    const perCard = Math.max(1, cssW) * Math.max(1, cssH);
+    const total = perCard * Math.max(1, cardCount);
+    const budgetDpr = Math.sqrt(PIXEL_BUDGET / total);
+    return Math.max(1, Math.min(2, native, budgetDpr));
+  }
+
+  const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const smooth = (t) => t * t * (3 - 2 * t);
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+  function hash2(i, j) {
+    let n = (i * 374761393 + j * 668265263) | 0;
+    n = (n ^ (n >>> 13)) * 1274126177;
+    n = n ^ (n >>> 16);
+    return (n >>> 0) / 4294967295;
+  }
+
+  function vnoise(x, y) {
+    const xi = Math.floor(x);
+    const yi = Math.floor(y);
+    const xf = x - xi;
+    const yf = y - yi;
+    const u = smooth(xf);
+    const v = smooth(yf);
+    const a = hash2(xi, yi);
+    const b = hash2(xi + 1, yi);
+    const c = hash2(xi, yi + 1);
+    const d = hash2(xi + 1, yi + 1);
+    const top = a + (b - a) * u;
+    const bot = c + (d - c) * u;
+    return top + (bot - top) * v;
+  }
+
+  // Robust stroke/gap widths: the 10th percentile ignores anti-aliased edge
+  // fragments and single-pixel spurs that would otherwise read as "1px ink".
+  function measureFeatures(px) {
+    const inks = [];
+    const gaps = [];
+
+    for (let axis = 0; axis < 2; axis++) {
+      for (let line = 0; line < PROBE; line += 3) {
+        let run = 0;
+        let gapRun = 0;
+        let sawInk = false;
+
+        for (let i = 0; i < PROBE; i++) {
+          const x = axis === 0 ? i : line;
+          const y = axis === 0 ? line : i;
+          const on = px[(y * PROBE + x) * 4 + 3] > 110;
+
+          if (on) {
+            if (gapRun > 0 && sawInk) gaps.push(gapRun);
+            gapRun = 0;
+            sawInk = true;
+            run++;
+          } else {
+            if (run > 0) inks.push(run);
+            run = 0;
+            gapRun++;
+          }
+        }
+        if (run > 0) inks.push(run);
+      }
+    }
+
+    inks.sort((a, b) => a - b);
+    gaps.sort((a, b) => a - b);
+    const pct = (arr, p) => (arr.length ? arr[Math.min(arr.length - 1, Math.floor(arr.length * p))] : PROBE);
+
+    return {
+      ink: pct(inks, 0.1),
+      gap: pct(gaps, 0.1),
+      medianInk: pct(inks, 0.5)
+    };
+  }
+
+  // Draw the vector once into an offscreen canvas, average its alpha per cell,
+  // keep only the table, then release the canvas.
+  function buildBrightnessTable(pathData) {
+    const c = document.createElement("canvas");
+    c.width = c.height = PROBE;
+    const g = c.getContext("2d", { willReadFrequently: true });
+    const path = new Path2D(pathData);
+
+    const base = (PROBE * 0.82) / 24;
+    const off = PROBE / 2 - 12 * base;
+    g.setTransform(base, 0, 0, base, off, off);
+    g.fillStyle = "#fff";
+    g.fill(path);
+
+    let px = g.getImageData(0, 0, PROBE, PROBE).data;
+    let minX = PROBE;
+    let minY = PROBE;
+    let maxX = -1;
+    let maxY = -1;
+
+    for (let y = 0; y < PROBE; y++) {
+      const row = y * PROBE * 4;
+      for (let x = 0; x < PROBE; x++) {
+        if (px[row + x * 4 + 3] > 12) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+
+    if (maxX < 0) {
+      // No ink at all. This is not a rendering state, it is a bad input: a path
+      // drawn outside the 24×24 box (a 512-coordinate icon, or a path using a
+      // translated transform) lands here. Failing loudly beats shipping a card
+      // of empty background that still looks like a successful build.
+      c.width = 0;
+      c.height = 0;
+      throw new Error(
+        "logo path produced no ink in the 24×24 probe. " +
+        "Check the viewBox: paths must be authored in a 24×24 coordinate system, " +
+        "because the sampler draws them at a fixed 24-unit scale."
+      );
+    }
+
+    const bw = maxX - minX + 1;
+    const bh = maxY - minY + 1;
+    const target = PROBE * 0.845;
+    const fit = Math.min(target / bw, target / bh);
+    const scale = base * fit;
+    const ox = (PROBE - bw * fit) / 2 - (minX - off) * fit;
+    const oy = (PROBE - bh * fit) / 2 - (minY - off) * fit;
+
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.clearRect(0, 0, PROBE, PROBE);
+    g.setTransform(scale, 0, 0, scale, ox, oy);
+    g.fill(path);
+
+    px = g.getImageData(0, 0, PROBE, PROBE).data;
+    const features = measureFeatures(px);
+
+    // Ink coverage inside the mark's own box. Two marks can have identical
+    // frame areas and still look wildly different in weight: Xiaomi is a solid
+    // slab at ~21% ink, Tesla is thin strokes at ~8%. Frame size alone cannot
+    // equalise them, so the renderer scales the frame by this number.
+    let inkSum = 0;
+    let inkCells = 0;
+    {
+      const n = GRID_BASE;
+      const step = PROBE / n;
+      for (let y = 0; y < n; y++) {
+        for (let x = 0; x < n; x++) {
+          let s = 0;
+          let c2 = 0;
+          for (let yy = Math.round(y * step); yy < Math.round((y + 1) * step); yy += 3) {
+            for (let xx = Math.round(x * step); xx < Math.round((x + 1) * step); xx += 3) {
+              s += px[(yy * PROBE + xx) * 4 + 3];
+              c2++;
+            }
+          }
+          if (c2) {
+            inkSum += s / c2 / 255;
+            inkCells++;
+          }
+        }
+      }
+    }
+    features.coverage = inkCells ? inkSum / inkCells : 0;
+
+    // The grid only has to out-resolve the vertical stroke pitch, not the
+    // finest pixel detail: each line is a single u sample. Compare the thinnest
+    // real stroke against what one grid column would cover, and step up only if
+    // the coarse grid would lose it.
+    const finest = Math.min(features.ink, features.gap);
+    const grid = finest >= (PROBE / GRID_BASE) * 0.85 ? GRID_BASE : GRID_FINE;
+
+    const cell = PROBE / grid;
+    const table = new Float32Array(grid * grid);
+    const samples = Math.max(1, Math.round(cell));
+
+    for (let gy = 0; gy < grid; gy++) {
+      for (let gx = 0; gx < grid; gx++) {
+        let sum = 0;
+        let count = 0;
+        const sx = Math.round(gx * cell);
+        const sy = Math.round(gy * cell);
+        for (let y = sy; y < sy + samples && y < PROBE; y += 2) {
+          const row = y * PROBE * 4;
+          for (let x = sx; x < sx + samples && x < PROBE; x += 2) {
+            sum += px[row + x * 4 + 3];
+            count++;
+          }
+        }
+        table[gy * grid + gx] = count ? sum / (count * 255) : 0;
+      }
+    }
+
+    c.width = 0;
+    c.height = 0;
+
+    // Ink box in normalised table space, so wide marks get a wide frame
+    // instead of being squeezed into a square. The threshold is deliberately
+    // low: a long tapering tail (TikTok's flag) averages below 0.04 per cell
+    // and would get cropped off.
+    let tx0 = grid, ty0 = grid, tx1 = -1, ty1 = -1;
+    for (let y = 0; y < grid; y++) {
+      for (let x = 0; x < grid; x++) {
+        if (table[y * grid + x] > 0.012) {
+          if (x < tx0) tx0 = x;
+          if (x > tx1) tx1 = x;
+          if (y < ty0) ty0 = y;
+          if (y > ty1) ty1 = y;
+        }
+      }
+    }
+    if (tx1 < 0) { tx0 = 0; ty0 = 0; tx1 = grid - 1; ty1 = grid - 1; }
+
+    // Half a cell of breathing room so the outermost stroke is not sheared.
+    const padCell = 0.6;
+    tx0 = Math.max(0, tx0 - padCell);
+    ty0 = Math.max(0, ty0 - padCell);
+    tx1 = Math.min(grid - 1, tx1 + padCell);
+    ty1 = Math.min(grid - 1, ty1 + padCell);
+
+    return {
+      table, scale, ox, oy, grid, features, fit,
+      crop: {
+        x: tx0 / grid,
+        y: ty0 / grid,
+        w: (tx1 - tx0 + 1) / grid,
+        h: (ty1 - ty0 + 1) / grid
+      }
+    };
+  }
+
+  // ----------------------------- table sampling -----------------------------
+
+  function sampleTable(data, u, v) {
+    const t = data.table;
+    const n = data.grid;
+    const x = clamp(u, 0, 1) * (n - 1);
+    const y = clamp(v, 0, 1) * (n - 1);
+    const x0 = Math.floor(x);
+    const y0 = Math.floor(y);
+    const x1 = Math.min(n - 1, x0 + 1);
+    const y1 = Math.min(n - 1, y0 + 1);
+    const fx = x - x0;
+    const fy = y - y0;
+    const a = t[y0 * n + x0];
+    const b = t[y0 * n + x1];
+    const c = t[y1 * n + x0];
+    const d = t[y1 * n + x1];
+    const top = a + (b - a) * fx;
+    const bot = c + (d - c) * fx;
+    return top + (bot - top) * fy;
+  }
+
+  // Find the brightest coarse blocks of the sampled logo. These become the
+  // detection boxes, so they are derived from the logo itself, not hand-placed.
+  function findRegions(data) {
+    const n = data.grid;
+    const BS = Math.max(4, Math.round(n / 8));
+    const cols = Math.floor(n / BS);
+    const rows = Math.floor(n / BS);
+    const cand = [];
+
+    for (let by = 0; by < rows; by++) {
+      for (let bx = 0; bx < cols; bx++) {
+        let sum = 0;
+        for (let y = 0; y < BS; y++) {
+          for (let x = 0; x < BS; x++) {
+            sum += data.table[(by * BS + y) * n + bx * BS + x];
+          }
+        }
+        const mean = sum / (BS * BS);
+        if (mean > 0.015) cand.push({ bx, by, mean });
+      }
+    }
+
+    cand.sort((a, b) => b.mean - a.mean);
+
+    const picks = [];
+    const far = (c, d) => Math.hypot(c.bx - d.bx, c.by - d.by);
+
+    for (const c of cand) {
+      if (picks.length >= 3) break;
+      if (picks.every((p) => far(p, c) >= 2.9)) picks.push(c);
+    }
+
+    if (picks.length < 3) {
+      for (const c of cand) {
+        if (picks.length >= 3) break;
+        if (!picks.includes(c) && picks.every((p) => far(p, c) >= 1.9)) picks.push(c);
+      }
+    }
+
+    const top = picks[0] ? picks[0].mean : 1;
+    const nw = (BS * 1.3) / n;
+    const nh = (BS * 1.3) / n;
+
+    return picks
+      .map((p) => {
+        const nx = (p.bx * BS + BS * 0.5 - (nw * n) / 2) / n;
+        const ny = (p.by * BS + BS * 0.5 - (nh * n) / 2) / n;
+        return {
+          nx: clamp(nx, 0.03, 0.97 - nw),
+          ny: clamp(ny, 0.03, 0.97 - nh),
+          nw,
+          nh,
+          conf: 0.8 + 0.18 * (p.mean / Math.max(top, 0.0001))
+        };
+      })
+      .sort((a, b) => a.ny - b.ny || a.nx - b.nx);
+  }
+
+  // Boxes must never overlap; push them apart on the vertical axis, then
+  // re-snap each one to the stroke grid.
+  function layoutBoxes(list, opts) {
+    const { x0, spacing, segPitch, w, h, pad } = opts;
+    const aw = opts.aw ?? opts.size;
+    const ah = opts.ah ?? opts.size;
+    const place = (b) => {
+      b.bw = clamp(Math.round((b.nw * aw) / spacing) * spacing, 5 * spacing, 13 * spacing);
+      b.bh = clamp(Math.round((b.nh * ah) / segPitch) * segPitch, 5 * segPitch, 11 * segPitch);
+      const cx = aw * (b.nx + b.nw / 2) + opts.lx;
+      const cy = ah * (b.ny + b.nh / 2) + opts.ly;
+      b.bx = x0 + Math.round((cx - b.bw / 2 - x0) / spacing) * spacing;
+      b.by = Math.round((cy - b.bh / 2) / segPitch) * segPitch;
+      b.bx = clamp(b.bx, pad, w - pad - b.bw);
+      b.by = clamp(b.by, pad + 24, h - pad - b.bh - 34);
+    };
+
+    for (let i = 0; i < list.length; i++) {
+      const a = list[i];
+      place(a);
+      for (let j = 0; j < i; j++) {
+        const b = list[j];
+        const padX = 10;
+        const padY = 16;
+        const hitX = a.bx < b.bx + b.bw + padX && a.bx + a.bw + padX > b.bx;
+        const hitY = a.by < b.by + b.bh + padY && a.by + a.bh + padY > b.by;
+        if (hitX && hitY) {
+          const below = b.by + b.bh + padY;
+          if (below + a.bh < h - pad - 20) a.by = Math.round(below / segPitch) * segPitch;
+          else a.by = Math.max(pad + 24, Math.round((b.by - a.bh - padY) / segPitch) * segPitch);
+        }
+      }
+    }
+    return list;
+  }
+
+  // -------------------------------- the card --------------------------------
+
+  class LineCard {
+    constructor(el, brand, index, total) {
+      this.el = el;
+      this.brand = brand;
+      this.index = index;
+      this.total = total;
+      this.canvas = el.querySelector(".canvas");
+      this.ctx = this.canvas.getContext("2d");
+      this.markCanvas = el.querySelector(".mark");
+      this.coordsEl = el.querySelector(".coords");
+      this.statusEl = el.querySelector(".status-text");
+      this.button = el.querySelector(".src");
+      this.labelEl = el.querySelector(".src-label");
+      this.arrowEl = el.querySelector(".arw");
+
+      const cs = getComputedStyle(el);
+      this.color = cs.getPropertyValue("--line").trim();
+      this.scan = cs.getPropertyValue("--scan").trim();
+      this.scanInk = cs.getPropertyValue("--scan-ink").trim();
+
+      this.data = buildBrightnessTable(brand.path);
+      this.path = new Path2D(brand.path);
+      this.regions = findRegions(this.data);
+
+      this.pt = { x: -999, y: -999, inside: false, vx: 0 };
+      this.lines = [];
+      this.boxes = [];
+      this.reveal = 0;
+      this.source = false;
+      this.scanStart = -1e9;
+      this.sweep = -1;
+      this.lastCoord = "";
+      this.noise = new Float32Array(NOISE_RES * NOISE_RES);
+      this.noiseReady = false;
+      this.visible = true;
+      this.dpr = 1;
+      this.w = 1;
+      this.h = 1;
+      this.start = performance.now();
+      this.lastMove = this.start;
+      this.touchTimer = 0;
+      this.touchActive = false;
+
+      this.statusEl.textContent = this.regions.length + " marks";
+
+      this.bind();
+      this.resize();
+      this.drawMark();
+      requestAnimationFrame(() => this.el.classList.add("is-ready"));
+    }
+
+    resize() {
+      const rect = this.canvas.getBoundingClientRect();
+      const w = Math.max(1, rect.width);
+      const h = Math.max(1, rect.height);
+      const dpr = pickDpr(this.total, w, h);
+
+      if (w === this.w && h === this.h && dpr === this.dpr) return;
+
+      this.w = w;
+      this.h = h;
+      this.dpr = dpr;
+      this.canvas.width = Math.round(w * dpr);
+      this.canvas.height = Math.round(h * dpr);
+
+      const pad = Math.max(11, w * 0.03);
+      this.spacing = clamp(w / 42, 8.6, 12.4);
+      this.nLines = Math.max(18, Math.floor((w - pad * 2) / this.spacing) + 1);
+      this.spacing = (w - pad * 2) / (this.nLines - 1);
+      this.x0 = (w - (this.nLines - 1) * this.spacing) / 2;
+
+      this.segPitch = clamp(h / 52, 10, 13.4);
+      this.segCore = this.segPitch * 0.82;
+      this.nSeg = Math.ceil(h / this.segPitch) + 1;
+
+      // Keep the mark clear of the header scrim and the caption block.
+      const bandTop = pad + Math.max(30, h * 0.075);
+      const bandBottom = h - Math.max(84, h * 0.235);
+      const bandH = Math.max(70, bandBottom - bandTop);
+
+      // Fit the ink's own aspect: a wide mark (Huawei, DeepSeek) gets a wide,
+      // shorter frame instead of being squeezed into a square and shrunk.
+      const crop = this.data.crop;
+      const inkAspect = crop.w / crop.h;
+
+      // Balance perceived weight, not frame area. Total ink scales with
+      // frameArea × coverage, so k = sqrt(REF / coverage) equalises it.
+      // Measured coverage spans 0.18 (Tesla) to 0.52 (Xiaomi): forcing them to
+      // the same frame size made the second row carry 25% more ink than the
+      // first, which reads as "the bottom row is too big" even though every
+      // frame is identical.
+      const cov = this.data.features.coverage || 0.29;
+      const REF = 0.29;
+      const weightK = clamp(Math.sqrt(REF / Math.max(cov, 0.05)), 0.78, 1.12);
+
+      const boxW = Math.min(w * 0.9, bandH * inkAspect) * weightK;
+      const boxH = boxW / inkAspect;
+      this.logo = {
+        w: boxW,
+        h: boxH,
+        x: (w - boxW) / 2,
+        y: bandTop + (bandH - boxH) / 2,
+        // the sampled-table sub-rect that holds ink
+        cx: crop.x,
+        cy: crop.y,
+        cw: crop.w,
+        ch: crop.h
+      };
+      this.logo.size = Math.min(boxW, boxH);
+
+      const previous = this.lines;
+      this.lines = [];
+      for (let i = 0; i < this.nLines; i++) {
+        const old = previous[i];
+        this.lines.push({
+          x: this.x0 + i * this.spacing,
+          dx: old ? old.dx : 0,
+          dvx: old ? old.dvx : 0,
+          phase: i * 0.73
+        });
+      }
+
+      this.units = [0.09, 0.17, 0.27, 0.39].map((f) => Math.max(0.8, this.spacing * f));
+
+      this.boxes = layoutBoxes(
+        this.regions.map((r) => ({ ...r, a: 0 })),
+        {
+          size: this.logo.size,
+          x0: this.x0,
+          spacing: this.spacing,
+          segPitch: this.segPitch,
+          lx: this.logo.x,
+          ly: this.logo.y,
+          aw: this.logo.w,
+          ah: this.logo.h,
+          w,
+          h,
+          pad
+        }
+      ).map((b) => ({ x: b.bx, y: b.by, w: b.bw, h: b.bh, conf: b.conf, a: 0 }));
+
+      this.drawMark();
+    }
+
+    drawMark() {
+      const c = this.markCanvas;
+      const ctx = c.getContext("2d");
+      const dpr = Math.min(3, window.devicePixelRatio || 1);
+      const rect = c.getBoundingClientRect();
+      const size = Math.max(18, Math.round(rect.width || 30));
+      c.width = Math.round(size * dpr);
+      c.height = Math.round(size * dpr);
+      c.style.width = size + "px";
+      c.style.height = size + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+
+      const cols = 11;
+      const rows = 22;
+      const widths = [0, 0.9, 1.4, 2.0];
+      const alphas = [0, 0.5, 0.78, 1];
+      const stepX = size / cols;
+      const stepY = size / rows;
+      const crop = this.data.crop;
+
+      ctx.fillStyle = this.color;
+
+      for (let i = 0; i < cols; i++) {
+        const x = (i + 0.5) * stepX;
+        const u = crop.x + (x / size) * crop.w;
+        let prev = 0;
+        let start = 0;
+        for (let j = 0; j <= rows; j++) {
+          let level = 0;
+          if (j < rows) {
+            const v = crop.y + (j / rows) * crop.h;
+            const b = sampleTable(this.data, u, v);
+            level = b > 0.5 ? 3 : b > 0.24 ? 2 : b > 0.06 ? 1 : 0;
+          }
+          if (level !== prev) {
+            if (prev > 0) {
+              ctx.globalAlpha = alphas[prev];
+              ctx.fillRect(x - widths[prev] / 2, start * stepY, widths[prev], (j - start) * stepY + 0.4);
+            }
+            prev = level;
+            start = j;
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    bind() {
+      this.el.addEventListener("pointerenter", (e) => {
+        if (e.pointerType === "touch") return;
+        this.begin(e);
+      });
+
+      this.el.addEventListener("pointermove", (e) => {
+        if (e.pointerType === "touch" && !this.touchActive) return;
+        const r = this.canvas.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        const y = e.clientY - r.top;
+        const now = performance.now();
+        const dt = Math.max(8, now - this.lastMove);
+        const vx = ((x - this.pt.x) / dt) * 16;
+        const prevX = this.pt.x;
+        this.pt.vx = lerp(this.pt.vx, clamp(vx, -120, 120), 0.35);
+        this.pt.x = x;
+        this.pt.y = y;
+        this.lastMove = now;
+        if (!this.pt.inside) this.begin(e);
+        else if (!REDUCED) this.pushAway(x, y, Math.abs(x - prevX));
+
+        clearTimeout(this.touchTimer);
+        if (e.pointerType === "touch") {
+          this.touchTimer = setTimeout(() => this.end(), 2200);
+        }
+      });
+
+      this.el.addEventListener("pointerleave", () => {
+        if (this.touchActive) return;
+        this.end();
+      });
+
+      this.el.addEventListener("pointerdown", (e) => {
+        if (e.pointerType !== "touch") return;
+        this.touchActive = true;
+        this.begin(e);
+        clearTimeout(this.touchTimer);
+        this.touchTimer = setTimeout(() => {
+          this.touchActive = false;
+          this.end();
+        }, 2200);
+      });
+
+      this.el.addEventListener("pointerup", () => {
+        if (!this.touchActive) return;
+        clearTimeout(this.touchTimer);
+        this.touchTimer = setTimeout(() => {
+          this.touchActive = false;
+          this.end();
+        }, 900);
+      });
+
+      this.button.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.source = !this.source;
+        this.button.setAttribute("aria-pressed", String(this.source));
+        this.labelEl.textContent = this.source ? "Hide the source" : "Reveal the source";
+        this.arrowEl.textContent = this.source ? "←" : "→";
+      });
+    }
+
+    begin(e) {
+      const r = this.canvas.getBoundingClientRect();
+      this.pt.x = clamp(e.clientX - r.left, 0, this.w);
+      this.pt.y = clamp(e.clientY - r.top, 0, this.h);
+      this.pt.inside = true;
+      this.scanStart = performance.now();
+      this.sweep = 0;
+      this.el.classList.add("is-scanning");
+      if (!REDUCED) this.pushAway(this.pt.x, this.pt.y, 120);
+    }
+
+    // A short outward nudge; the springs below bring every line home again.
+    pushAway(x, y, travel) {
+      const R = this.pushRadius || 200;
+      const power = clamp(travel / 9, 0.45, 3.4);
+      for (const line of this.lines) {
+        const d = line.x - x;
+        const ad = Math.abs(d);
+        if (ad < R) {
+          const f = 1 - ad / R;
+          line.dvx += Math.sign(d || 1) * power * 2.4 * f * f;
+        }
+      }
+    }
+
+    end() {
+      this.pt.inside = false;
+      this.el.classList.remove("is-scanning");
+      this.coordsEl.textContent = "";
+      this.lastCoord = "";
+    }
+
+    update(dt, now) {
+      const time = REDUCED ? 0 : (now - this.start) / 1000;
+      this.updateNoise(dt, time);
+
+      const p = this.pt;
+      const radius = Math.max(78, this.w * 0.3);
+      this.pushRadius = radius * 1.3;
+      const damping = Math.pow(0.925, dt);
+      const drift = p.inside && !REDUCED ? clamp(Math.abs(p.vx) / 60, 0, 1) * 0.85 : 0;
+
+      for (const line of this.lines) {
+        if (drift > 0) {
+          const d = p.x - line.x;
+          const ad = Math.abs(d);
+          if (ad < radius) {
+            const f = 1 - ad / radius;
+            line.dvx -= Math.sign(d || 1) * drift * f * f * 0.9;
+          }
+        }
+        line.dvx += -line.dx * 0.055 * dt;
+        line.dvx *= damping;
+        line.dx += line.dvx * dt;
+        if (line.dx > 26) { line.dx = 26; line.dvx *= -0.3; }
+        if (line.dx < -26) { line.dx = -26; line.dvx *= -0.3; }
+      }
+
+      p.vx *= Math.pow(0.9, dt);
+
+      if (this.sweep >= 0) {
+        this.sweep += dt * 0.026;
+        if (this.sweep > 1) this.sweep = -1;
+      }
+
+      this.reveal += ((this.source ? 1 : 0) - this.reveal) * Math.min(1, 0.14 * dt);
+
+      if (p.inside) {
+        const text = "X " + (p.x / this.w).toFixed(3) + "   Y " + (p.y / this.h).toFixed(3);
+        if (text !== this.lastCoord) {
+          this.coordsEl.textContent = text;
+          this.lastCoord = text;
+        }
+      }
+    }
+
+    updateNoise(dt, time) {
+      const n = NOISE_RES;
+      const first = !this.noiseReady;
+      const ease = first ? 1 : Math.min(1, 0.09 * dt);
+
+      for (let j = 0; j < n; j++) {
+        const v = j / (n - 1);
+        for (let i = 0; i < n; i++) {
+          const u = i / (n - 1);
+          const a = vnoise(u * 3.4 + 9.2, v * 4.1 - time * 0.22);
+          const b = vnoise(u * 8.3 - 2.7, v * 9.4 - time * 0.43);
+          const target = a * 0.62 + b * 0.38 - 0.5;
+          const idx = j * n + i;
+          this.noise[idx] += (target - this.noise[idx]) * ease;
+        }
+      }
+      this.noiseReady = true;
+    }
+
+    falloff(y) {
+      if (!this.pt.inside) return 0;
+      const R = this.pushRadius || 200;
+      const d = Math.abs(y - this.pt.y);
+      if (d > R) return 0;
+      const t = 1 - d / R;
+      return t * t * (3 - 2 * t);
+    }
+
+    draw(now) {
+      const ctx = this.ctx;
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.clearRect(0, 0, this.w, this.h);
+      ctx.globalAlpha = 1;
+
+      const time = REDUCED ? 0 : (now - this.start) / 1000;
+
+      this.drawSource(ctx);
+      this.drawLines(ctx, time);
+      this.drawSourceOutline(ctx);
+      this.drawSweep(ctx);
+      this.drawDetections(ctx, now);
+    }
+
+    drawLines(ctx, time) {
+      // Batched per width class: one rounded-rect path per class, one fill each.
+      // Stroking every segment with a round cap is ~6x slower on Chrome/ANGLE.
+      const paths = [new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+      const logo = this.logo;
+      const nz = NOISE_RES;
+      const pitch = this.segPitch;
+      const core = this.segCore;
+      const units = this.units;
+      const dpr = this.dpr;
+      const top0 = (pitch - core) * 0.5;
+
+      for (const line of this.lines) {
+        const u = (line.x - logo.x) / logo.w;
+        const tu = logo.cx + clamp(u, 0, 1) * logo.cw;
+        const inX = u > -0.01 && u < 1.01;
+        const sway = REDUCED ? 0 : Math.sin(time * 0.5 + line.phase) * 0.34 +
+          Math.sin(time * 0.23 + line.phase * 1.7) * 0.2;
+
+        for (let s = 0; s < this.nSeg; s++) {
+          const top = top0 + s * pitch;
+          if (top > this.h) break;
+          const my = top + core * 0.5;
+
+          let b = 0;
+          let outside = true;
+          if (inX) {
+            const v = (my - logo.y) / logo.h;
+            if (v >= 0 && v <= 1) {
+              outside = false;
+              const nv = clamp(v, 0, 1);
+              const ni = Math.round((logo.cy + nv * logo.ch) * (nz - 1)) * nz +
+                Math.round(tu * (nz - 1));
+              const base = sampleTable(this.data, tu, logo.cy + nv * logo.ch);
+              // Noise lifts mid-tones; it must never fill a knockout. A solid
+              // mark's counter (Xiaomi's "mi", Huawei's petals) is the one
+              // feature that tells you the mark is not a blob.
+              b = base + this.noise[ni] * 0.235 * smooth(clamp(base * 3, 0, 1));
+            } else {
+              const nv = clamp(v, 0, 1);
+              const ni = Math.round(nv * (nz - 1)) * nz + Math.round(tu * (nz - 1));
+              b = 0.012 + this.noise[ni] * 0.05;
+            }
+          }
+
+          const level = b < 0.135 ? 0 : b < 0.33 ? 1 : b < 0.6 ? 2 : 3;
+          // Inside the mark, a knockout is a real hole: draw nothing so the
+          // card's own background shows through. Outside, keep the faint field.
+          if (level === 0 && !outside) continue;
+          const w = units[level];
+          let x = line.x + line.dx * this.falloff(my) + sway;
+          x = Math.round((x - w / 2) * dpr) / dpr;
+
+          paths[level].roundRect(x, top, w, core, w / 2);
+        }
+      }
+
+      ctx.fillStyle = this.color;
+      const alphas = [0.155, 0.38, 0.66, 1];
+      for (let lv = 0; lv < 4; lv++) {
+        ctx.globalAlpha = alphas[lv];
+        ctx.fill(paths[lv]);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    drawSource(ctx) {
+      const rv = this.reveal;
+      if (rv < 0.01) return;
+
+      const logo = this.logo;
+      const color = this.color;
+      const n = this.data.grid;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.setLineDash([1, 2.4]);
+      ctx.globalAlpha = 0.16 * rv;
+      ctx.lineWidth = 0.5;
+
+      const step = Math.max(2, Math.round(n / 32));
+      for (let i = 0; i <= n; i += step) {
+        const x = logo.x + (i / n) * logo.w;
+        const y = logo.y + (i / n) * logo.h;
+        ctx.beginPath();
+        ctx.moveTo(x, logo.y);
+        ctx.lineTo(x, logo.y + logo.h);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(logo.x, y);
+        ctx.lineTo(logo.x + logo.w, y);
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]);
+      ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+      ctx.globalAlpha = 0.5 * rv;
+      ctx.fillStyle = color;
+      ctx.font = "500 7px " + MONO;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "1.1px";
+      const label = "GRID " + n + " × " + n;
+      ctx.fillText(label, logo.x + logo.w - ctx.measureText(label).width, logo.y + logo.h + 13);
+      if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    // The source vector sits above the strokes, so revealing it actually reveals it.
+    drawSourceOutline(ctx) {
+      const rv = this.reveal;
+      if (rv < 0.01) return;
+
+      const logo = this.logo;
+      const d = this.data;
+      // The on-card frame is the ink box, so one uniform factor maps probe
+      // pixels into it. logo.w / logo.h already equals crop.w / crop.h.
+      const k = logo.w / (PROBE * d.crop.w);
+      const s = d.scale * k;
+
+      ctx.save();
+      ctx.translate(
+        logo.x - d.crop.x * PROBE * k + d.ox * k,
+        logo.y - d.crop.y * PROBE * k + d.oy * k
+      );
+      ctx.scale(s, s);
+      ctx.lineWidth = 1.15 / s;
+      ctx.strokeStyle = this.color;
+      ctx.globalAlpha = 0.85 * rv;
+      ctx.setLineDash([4.5 / s, 3.5 / s]);
+      ctx.lineDashOffset = -performance.now() * 0.004 / s;
+      ctx.stroke(this.path);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+    drawSweep(ctx) {
+      if (this.sweep < 0 || this.sweep > 1) return;
+      const p = this.sweep;
+      const e = easeOut(p);
+      const y = this.logo.y - 20 + (this.logo.h + 40) * e;
+      const x0 = this.logo.x - 20;
+      const x1 = this.logo.x + this.logo.w + 20;
+      const grad = ctx.createLinearGradient(x0, 0, x1, 0);
+      grad.addColorStop(0, "rgba(0,0,0,0)");
+      grad.addColorStop(0.18, this.scan);
+      grad.addColorStop(0.82, this.scan);
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+
+      ctx.save();
+      ctx.globalAlpha = 0.55 * (1 - p * 0.55);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x0, Math.round(y) + 0.5);
+      ctx.lineTo(x1, Math.round(y) + 0.5);
+      ctx.stroke();
+
+      ctx.globalAlpha = 0.5 * (1 - p);
+      ctx.strokeStyle = this.scan;
+      ctx.beginPath();
+      ctx.moveTo(x0, y - 6);
+      ctx.lineTo(x0, y + 6);
+      ctx.moveTo(x1, y - 6);
+      ctx.lineTo(x1, y + 6);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    drawDetections(ctx, now) {
+      const boxes = this.boxes;
+      if (!boxes.length) return;
+
+      const elapsed = this.pt.inside ? (now - this.scanStart) / 1000 : 0;
+      let any = false;
+      const scale = clamp(this.spacing / 11, 0.72, 1);
+
+      boxes.forEach((b, i) => {
+        const target = this.pt.inside ? clamp((elapsed * 1000 - i * 95) / 280, 0, 1) : 0;
+        b.a += (target - b.a) * (target > b.a ? 0.34 : 0.16);
+        if (b.a > 0.01) any = true;
+      });
+      if (!any) return;
+
+      ctx.save();
+      ctx.strokeStyle = this.scan;
+      ctx.fillStyle = this.scan;
+      ctx.lineJoin = "miter";
+
+      ctx.setLineDash([2, 4]);
+      ctx.lineWidth = 0.75;
+      for (let i = 0; i < boxes.length - 1; i++) {
+        const a = boxes[i];
+        const b = boxes[i + 1];
+        const alpha = Math.min(a.a, b.a) * 0.38;
+        if (alpha < 0.01) continue;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.moveTo(a.x + a.w / 2, a.y + a.h / 2);
+        ctx.lineTo(b.x + b.w / 2, b.y + b.h / 2);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      boxes.forEach((b, i) => {
+        const a = b.a;
+        if (a < 0.01) return;
+
+        const k = 0.94 + 0.06 * easeOut(a);
+        const w = b.w * k;
+        const h = b.h * k;
+        const x = b.x + (b.w - w) / 2;
+        const y = b.y + (b.h - h) / 2;
+        const alpha = smooth(clamp(a, 0, 1));
+
+        ctx.globalAlpha = alpha * 0.46;
+        ctx.lineWidth = 0.75;
+        ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+
+        const arm = Math.min(11, w * 0.2, h * 0.2) * scale;
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = 1.25;
+        ctx.beginPath();
+        ctx.moveTo(x, y + arm); ctx.lineTo(x, y); ctx.lineTo(x + arm, y);
+        ctx.moveTo(x + w - arm, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + arm);
+        ctx.moveTo(x, y + h - arm); ctx.lineTo(x, y + h); ctx.lineTo(x + arm, y + h);
+        ctx.moveTo(x + w - arm, y + h); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w, y + h - arm);
+        ctx.stroke();
+
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.lineWidth = 0.75;
+        ctx.beginPath();
+        ctx.moveTo(cx - 3.5, cy); ctx.lineTo(cx + 3.5, cy);
+        ctx.moveTo(cx, cy - 3.5); ctx.lineTo(cx, cy + 3.5);
+        ctx.stroke();
+
+        const tag = "M0" + (i + 1) + " · " + b.conf.toFixed(2);
+        ctx.save();
+        ctx.globalAlpha = 1;
+        ctx.font = "500 " + Math.round(8.5 * scale) + "px " + MONO;
+        ctx.textBaseline = "alphabetic";
+        ctx.fillStyle = this.scan;
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "0.5px";
+        const tw = ctx.measureText(tag).width;
+        const chipW = tw + 11;
+        const chipH = 15 * scale;
+        const chipX = x;
+        const chipY = y - chipH - 5;
+
+        ctx.globalAlpha = alpha * 0.97;
+        ctx.fillRect(chipX, chipY, chipW, chipH);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = this.scanInk;
+        ctx.fillText(tag, chipX + 5.5, chipY + chipH - 4.6);
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+        ctx.restore();
+
+        const coord = "x" + Math.round(b.x) + "  y" + Math.round(b.y);
+        ctx.save();
+        ctx.globalAlpha = 1;
+        ctx.font = "500 " + Math.round(7.5 * scale) + "px " + MONO;
+        ctx.fillStyle = this.scan;
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "0.35px";
+        const cw = ctx.measureText(coord).width;
+        const cwPad = 4;
+        ctx.globalAlpha = alpha * 0.9;
+        ctx.fillStyle = this.scanInk;
+        ctx.fillRect(x + w - cw - cwPad * 2, y + h + 3, cw + cwPad * 2, 11);
+        ctx.fillStyle = this.scan;
+        ctx.fillText(coord, x + w - cw - cwPad, y + h + 11.2);
+        if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+        ctx.restore();
+      });
+
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ------------------------------- bootstrap --------------------------------
+
+  function makeCard(brand, index, total) {
+    const el = document.createElement("article");
+    el.className = "card";
+    el.dataset.brand = brand.id;
+    el.setAttribute("aria-label", brand.name + " line study");
+    const p = brand.palette;
+    el.style.cssText = [
+      "--bg:" + p.bg,
+      "--bg-rgb:" + p.bgRgb,
+      "--ink:" + p.ink,
+      "--line:" + p.line,
+      "--scan:" + p.scan,
+      "--scan-ink:" + p.scanInk,
+      "--edge:" + p.edge,
+      "--glow:" + p.glow
+    ].join(";");
+
+    const num = String(index + 1).padStart(2, "0");
+    const tot = String(total).padStart(2, "0");
+
+    el.innerHTML =
+      '<canvas class="canvas" aria-hidden="true"></canvas>' +
+      '<div class="scrim top"></div>' +
+      '<div class="scrim bottom"></div>' +
+      '<div class="ui">' +
+        '<div class="card-top">' +
+          '<div class="brand">' +
+            '<canvas class="mark" aria-hidden="true"></canvas>' +
+            '<span class="brand-name"></span>' +
+          '</div>' +
+          '<div class="top-right">' +
+            '<span class="idx"><b>' + num + '</b> <span>/ ' + tot + '</span></span>' +
+            '<span class="status"><i class="dot"></i><span class="status-text"></span></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-bottom">' +
+          '<p class="tagline"></p>' +
+          '<div class="bottom-row">' +
+            '<button class="src" type="button" aria-pressed="false">' +
+              '<span class="src-label">Reveal the source</span>' +
+              '<span class="arw" aria-hidden="true">→</span>' +
+            '</button>' +
+            '<span class="meta-wrap">' +
+              '<span class="meta"></span>' +
+              '<span class="coords">X 0.000 Y 0.000</span>' +
+            '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    el.querySelector(".brand-name").textContent = brand.name;
+    el.querySelector(".tagline").textContent = brand.tagline;
+    el.querySelector(".meta").textContent = brand.meta;
+
+    return el;
+  }
+
+  const host = document.getElementById("cards");
+  const cards = [];
+  let built = 0;
+
+  // Exposed for the diagnostic pass (scripts/diagnose.mjs) and for the agent's
+  // own verification; not used by the page itself.
+  window.__brandLines = { cards, brands: BRANDS };
+
+  // Profiling eight marks is tens of milliseconds each; spread it so the
+  // first paint is not blocked behind all of them.
+  function buildNext() {
+    if (built >= BRANDS.length) return;
+    const brand = BRANDS[built];
+    const el = makeCard(brand, built, BRANDS.length);
+    host.appendChild(el);
+    cards.push(new LineCard(el, brand, built, BRANDS.length));
+    built++;
+    requestAnimationFrame(buildNext);
+  }
+  requestAnimationFrame(buildNext);
+
+  let resizeTimer = 0;
+  const onResize = () => {
+    cancelAnimationFrame(resizeTimer);
+    resizeTimer = requestAnimationFrame(() => cards.forEach((c) => c.resize()));
+  };
+  window.addEventListener("resize", onResize, { passive: true });
+
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(() => onResize());
+    const watch = () => {
+      cards.forEach((c) => ro.observe(c.el));
+    };
+    const t = setInterval(() => {
+      if (cards.length === BRANDS.length) {
+        clearInterval(t);
+        watch();
+      }
+    }, 120);
+  }
+
+  // Cards scrolled out of view stop rendering; the springs stay alive so they
+  // resume exactly where they were.
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const card = cards.find((c) => c.el === e.target);
+        if (card) card.visible = e.isIntersecting;
+      }
+    });
+    const t = setInterval(() => {
+      if (cards.length === BRANDS.length) {
+        clearInterval(t);
+        cards.forEach((c) => io.observe(c.el));
+      }
+    }, 120);
+  }
+
+  let last = performance.now();
+  let tick = 0;
+  let idleAccum = 0;
+  function loop(now) {
+    const raw = (now - last) / 16.6667;
+    const dt = Math.min(2.4, raw);
+    last = now;
+    tick++;
+
+    // Idle cards drift slowly, so they do not need a full-rate redraw. The
+    // important part is *staggering*: redrawing every idle card on the same
+    // tick keeps the average cost but doubles the peak, which is exactly what
+    // shows up as a bad p95 while p50 looks fine. Half the cards redraw each
+    // frame, alternating, so the per-frame cost is flat.
+    const many = cards.length > 4;
+    const slot = many ? tick & 1 : 0;
+
+    for (const card of cards) {
+      if (!card.visible) continue;
+
+      const busy = card.pt.inside || card.reveal > 0.005 || card.sweep >= 0;
+      if (!busy && many && (card.index & 1) !== slot) continue;
+
+      // idle cards advance time at half speed to keep the drift rate unchanged
+      card.update(busy ? dt : dt * 2, now);
+      card.draw(now);
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.addEventListener("visibilitychange", () => {
+    last = performance.now();
+  });
+})();
+</script>
+</body>
+</html>
